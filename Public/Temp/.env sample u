@@ -1,0 +1,3 @@
+PORT = 8000
+MONGO_URI = mongodb+srv://bhardwazzaman727_db_user:<db_password>@cluster.ckj5xkl.mongodb.net/?appName=Cluster
+
