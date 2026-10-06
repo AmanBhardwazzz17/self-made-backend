@@ -3,15 +3,16 @@ import dotenv from "dotenv"
 import connectDB from "./db/Index.js";
 import {app} from './app.js'
 dotenv.config({
-    path: './.env'
+    path: './Public/Temp/.env'
 })
 
 
 
 connectDB()
 .then(() => {
-    app.listen(process.env.PORT || 8000, () => {
-        console.log(`⚙️ Server is running at port : ${process.env.PORT}`);
+    const port = process.env.PORT || 8000;
+    app.listen(port, () => {
+        console.log(`⚙️ Server is running at port : ${port}`);
     })
 })
 .catch((err) => {
