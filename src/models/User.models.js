@@ -71,7 +71,7 @@ UserSchema.methods.generateRefreshToken = function(){
         }, 
         process.env.ACCESS_TOKEN_EXPIRE, {expiresIn: "1d"})
 }
-UserSchema.methods.generateRefreshToken = function(){
+UserSchema.methods.generateShortsRefreshToken = function(){
     return jwt.sign(
         {
             _id: this._id,
