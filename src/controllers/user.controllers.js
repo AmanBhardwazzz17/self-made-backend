@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import {User} from "../models/User.model.js";
-import {uploadOncloudinary} from "../utils/cloudinary.js";
+import { uploadOnCloudinary } from "../utils/Cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 
@@ -21,13 +21,13 @@ const registerUser = asyncHandler(async (req, res) => {
     console.log("email: ", email);
     // validation - not empty
     if(
-        [fullName, email, username, password].some((field) => 
-        field?.trim() === "")
+        [fullName, email, username, password].some((field) => !field ||
+        field.trim() === "")
     ){
         throw new ApiError(400, "All fields are required" )
     }
     // check if user already exists: username, email
-    const existerUser = User.findOne({
+    const existerUser = await User.findOne({
         $or: [{ email }, { username }]
     })
     //
@@ -43,11 +43,10 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // upload them to cloudinary, avatar
-    const avatarCloudinaryResult = await uploadOncloudinary(avatarLocalPath)
-    const coverImageCloudinaryResult = await uploadOncloudinary
-    (coverImageLocalPath)
+    const avatar = await uploadOnCloudinary(avatarLocalPath)
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
-    if (!avatar) {
+    if (!avatar || !coverImage) {
         throw new ApiError(400, "Failed to upload images to cloudinary")
     }
 
@@ -77,4 +76,4 @@ const registerUser = asyncHandler(async (req, res) => {
         )
 });
 
-export { registerUser, loginUser };
+export { registerUser };
