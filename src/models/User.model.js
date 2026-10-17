@@ -48,7 +48,7 @@ const UserSchema = new Schema({
         default: null
     },
     
-})
+}, { timestamps: true });
 UserSchema.pre("save", async function(){
     if(!this.isModified("password")) return;
 
@@ -59,7 +59,9 @@ UserSchema.methods.comparePassword = async function(password){
     return await bcrypt.compare(password, this.password)
 }
 UserSchema.methods.generateAccessToken = function(){
-    return jwt.sign({id: this._id}, process.env.JWT_ACCESS_SECRET, {expiresIn: "15m"})
+    return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRE || "15m",
+    });
 }
 UserSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
@@ -68,8 +70,10 @@ UserSchema.methods.generateRefreshToken = function(){
             email: this.email,
             username: this.username,
             fullName: this.fullName,
-        }, 
-        process.env.ACCESS_TOKEN_EXPIRE, {expiresIn: "1d"})
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: process.env.REFRESH_TOKEN_EXPIRE || "1d" }
+    );
 }
 UserSchema.methods.generateShortsRefreshToken = function(){
     return jwt.sign(
@@ -78,8 +82,9 @@ UserSchema.methods.generateShortsRefreshToken = function(){
             email: this.email,
             username: this.username,
             fullName: this.fullName,
-        }, 
-        process.env.REFRESH_TOKEN_SECRET, {expiresIn: "7d"})
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: "7d" }
+    );
 }
-
 export const User = mongoose.model("User", UserSchema);
